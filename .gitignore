@@ -112,3 +112,9 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+# 15. Environment & configuration files
+.env
+.env.local
+.env.*.local
+*.env
+
