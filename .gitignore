@@ -1,0 +1,114 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Common .gitignore targets
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 1. OS-generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# 2. Python byte-code & artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dylib
+*$py.class
+
+# 3. Build / distribution folders & metadata
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+*.egg
+*.whl
+pip-wheel-metadata/
+share/python-wheels/
+
+# 4. Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 5. Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 6. Packaging tools
+.Python
+setup.cfg
+develop-eggs/
+sdist/
+lib/
+lib64/
+parts/
+var/
+
+# 7. Testing & coverage
+.tox/
+.nox/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+htmlcov/
+
+# 8. Type-checker, analyzer & IDE caches
+.mypy_cache/
+.pyre/
+.dmypy.json
+.pytype/
+.idea/
+.vscode/
+
+# 9. Profiling data
+.prof
+*.lprof
+
+# 10. Jupyter Notebooks
+.ipynb_checkpoints
+*.nb-archive
+
+# 11. Django / Flask local stuff
+*.log
+local_settings.py
+instance/
+.webassets-cache
+db.sqlite3
+db.sqlite3-journal
+
+# 12. Sphinx documentation
+docs/_build/
+
+# 13. Editor swap & backup files
+*~
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*.orig
+
+# 14. Node / front-end
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
