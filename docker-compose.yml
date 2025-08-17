@@ -1,30 +1,86 @@
 services:
   litellm:
+    container_name: litellm
+    restart: unless-stopped
     build:
       context: .
       args:
         target: runtime
-    image: ghcr.io/berriai/litellm:main-stable
+    image: ghcr.io/berriai/litellm:main-v1.75.8-nightly
     ########################################
     # Uncomment these lines to start proxy with a config.yaml file ##
     volumes:
-      - ./config.yaml:/app/config.yaml
+      - ./litellm_config.yaml:/app/config.yaml
     command:
       - "--config=/app/config.yaml"
+      - "--port=4000"
     #############################################
     ports:
       - "4000:4000" # Map the container port to the host, change the host port if necessary
     env_file:
       - .env # Load local .env file
+    environment:
+      - PORT=4000  # Override the global PORT for LiteLLM
     depends_on:
       - db # Indicates that this service depends on the 'db' service, ensuring 'db' starts first
     healthcheck:
       # Defines the health check configuration for the container
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 http://localhost:4000/health/liveliness || exit 1" ] # Command to execute for health check
+      test: [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 http://localhost:4000/health/liveliness || exit 1",
+        ] # Command to execute for health check
       interval: 30s # Perform health check every 30 seconds
       timeout: 10s # Health check command times out after 10 seconds
       retries: 3 # Retry up to 3 times if health check fails
       start_period: 40s # Wait 40 seconds after container start before beginning health checks
+
+  # LibreChat API
+  api:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: librechat-api
+    restart: unless-stopped
+    ports:
+      - "3080:3080"
+    depends_on:
+      - mongodb
+      - meilisearch
+      - litellm
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    environment:
+      - PORT=3080  # Ensure LibreChat uses port 3080
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml
+      - ./images:/app/client/public/images
+      - ./uploads:/app/uploads
+      - ./logs:/app/api/logs
+
+  # MongoDB for LibreChat
+  mongodb:
+    image: mongo:6-jammy
+    container_name: chat-mongodb
+    restart: unless-stopped
+    # Uncomment to expose MongoDB externally (not recommended for production)
+    # ports:
+    #   - "27017:27017"
+    command: mongod --noauth
+    volumes:
+      - ./data-node:/data/db
+
+  # Meilisearch for LibreChat search functionality
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.3
+    container_name: chat-meilisearch
+    restart: unless-stopped
+    # Uncomment to expose Meilisearch externally (not recommended for production)
+    # ports:
+    #   - "7700:7700"
+    env_file:
+      - .env
+    volumes:
+      - ./meili_data:/meili_data
 
   db:
     image: postgres:16
@@ -35,30 +91,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5433" # Custom port 5433 (both host and container) - see .env file
+    command: postgres -p 5433 # Configure PostgreSQL to run on port 5433 instead of default 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data # Persists Postgres data across container restarts
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER} -p 5433",
+        ]
       interval: 1s
       timeout: 5s
       retries: 10
 
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - prometheus_data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=15d"
-    restart: always
-
 volumes:
-  prometheus_data:
-    driver: local
   postgres_data:
     name: litellm_postgres_data # Named volume for Postgres data persistence
