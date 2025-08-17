@@ -118,3 +118,10 @@ pnpm-lock.yaml
 .env.*.local
 *.env
 
+# 16. Docker data directories & logs
+data-node/
+meili_data/
+logs/
+uploads/
+images/
+

@@ -1,0 +1,29 @@
+version: 1.2.8
+cache: true
+
+# Point LibreChat to LiteLLM as a custom OpenAI-compatible endpoint
+endpoints:
+  custom:
+    - name: "LiteLLM"
+      apiKey: "${LITELLM_LIBRECHAT_KEY}"
+      baseURL: "http://litellm:4000/v1"
+      models:
+        default: ["gpt-5-smart"]
+        fetch: true
+      titleConvo: true
+      titleModel: "gpt-5-smart"
+      modelDisplayLabel: "GPT-5 Smart"
+      # Some providers require dropping params; adjust as needed
+      dropParams: ["stop", "user"]
+
+# Keep UI sane defaults
+interface:
+  customWelcome: "Welcome to LibreChat via LiteLLM"
+  modelSelect: true
+  parameters: true
+  sidePanel: true
+  presets: true
+  prompts: true
+  bookmarks: true
+  multiConvo: true
+  agents: true

@@ -4,14 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a LiteLLM proxy deployment setup using Docker Compose. The project provides a containerized proxy service for accessing various LLM APIs through a unified interface, with PostgreSQL for persistence and Prometheus for monitoring.
+This is a LiteLLM proxy deployment setup using Docker Compose. The project provides a containerized proxy service for accessing various LLM APIs through a unified interface, with PostgreSQL for persistence.
 
 ## Architecture
 
-The setup consists of three main services:
+The setup consists of two main services:
 - **LiteLLM Proxy**: Main service running on port 4000, handles API requests and model routing
-- **PostgreSQL Database**: Stores model configurations and proxy data (port 5432)
-- **Prometheus**: Monitoring and metrics collection (port 9090)
+- **PostgreSQL Database**: Stores model configurations and proxy data (port 5433)
 
 Configuration is managed through:
 - `docker-compose.yml`: Service definitions and container orchestration
@@ -28,7 +27,6 @@ docker-compose up -d
 # View service logs
 docker-compose logs -f litellm
 docker-compose logs -f db
-docker-compose logs -f prometheus
 
 # Stop all services
 docker-compose down
@@ -62,11 +60,8 @@ docker-compose exec db pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} > backup.sql
 docker-compose logs db
 ```
 
-### Monitoring
+### Health Checks
 ```bash
-# Access Prometheus metrics
-# Open http://localhost:9090 in browser
-
 # Check proxy health
 curl http://localhost:4000/health/liveliness
 curl http://localhost:4000/health/readiness
