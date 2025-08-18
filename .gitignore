@@ -125,3 +125,6 @@ logs/
 uploads/
 images/
 
+# 17. AI
+CLAUDE.md
+AGENTS.md
