@@ -36,7 +36,7 @@ services:
 
   # LibreChat API
   api:
-    image: ghcr.io/danny-avila/librechat:latest
+    image: ghcr.io/danny-avila/librechat-dev:latest
     container_name: librechat-api
     restart: unless-stopped
     ports:
